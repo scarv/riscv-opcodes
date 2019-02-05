@@ -12,8 +12,77 @@ match = {}
 mask = {}
 pseudos = {}
 arguments = {}
+opcodebits ={}
+
+digits = {
+"0":"zero",
+"1":"one",
+"2":"two",
+"3":"three"
+}
+
+cargs= ['imm11'   , 'imm11hi' , 'imm11lo' , 'imm5'
+, 'cshamt'  , 'cmshamt' , 'b0'      , 'b1'      ,
+'b2'      , 'b3'      , 'ca'      , 'cb'      ,
+'cc'      , 'cd'      , 'crs1'    , 'crs2'    ,
+'crs3'    ,             'crd'     , 'crdm'    ,
+'lut8','lut4', 'rtamt',   'cs', 'cl']
+
+acodes = {}
+acodes['imm11'  ] = "Xl"
+acodes['imm11hi'] = "Xm"
+acodes['imm11lo'] = "Xn"
+acodes['imm5'   ] = "X5"
+acodes['cshamt' ] = "XR"
+acodes['cmshamt'] = "Xr"
+acodes['b0'     ] = "Xw"
+acodes['b1'     ] = "Xx"
+acodes['b2'     ] = "Xy"
+acodes['b3'     ] = "Xz"
+acodes['ca'     ] = "Xa"
+acodes['cb'     ] = "Xb"
+acodes['cc'     ] = "Xc"
+acodes['cd'     ] = "Xd"
+acodes['crs1'   ] = "Xs"
+acodes['crs2'   ] = "Xt"
+acodes['crs3'   ] = "XS"
+acodes['crd'    ] = "XD"
+acodes['crdm'   ] = "XM"
+acodes['lut8'   ] = "X8"
+acodes['lut4'   ] = "X4" # These two share the same field coding as they are
+acodes['rtamt'  ] = "X4" # identical in all but name.
+acodes['cs'     ] = "Xk"
+acodes['cl'     ] = "XL"
+acodes['rd'     ] = "d"
+acodes['rs1'    ] = "s"
+acodes['rs2'    ] = "t"
 
 arglut = {}
+arglut['imm11'  ] = (31,21)
+arglut['imm11hi'] = (31,25)
+arglut['imm11lo'] = (10, 7)
+arglut['imm5'   ] = (19,15)
+arglut['cshamt' ] = (23,20)
+arglut['cmshamt'] = (29,24)
+arglut['cs'     ] = (31,28)
+arglut['cl'     ] = (27,24)
+arglut['b0'     ] = (31,30)
+arglut['b1'     ] = (29,28)
+arglut['b2'     ] = (27,26)
+arglut['b3'     ] = (25,24)
+arglut['ca'     ] = (24,24)
+arglut['cb'     ] = (19,19)
+arglut['cc'     ] = (11,11)
+arglut['cd'     ] = (20,20)
+arglut['crs1'   ] = (18,15)
+arglut['crs2'   ] = (23,20)
+arglut['crs3'   ] = (27,24)
+arglut['crd'    ] = (10, 7)
+arglut['crdm'   ] = ( 9, 7)
+arglut['lut4'   ] = (28,25)
+arglut['lut8'   ] = (31,24)
+arglut['rtamt'  ] = (28,25)
+
 arglut['rd'] = (11,7)
 arglut['rs1'] = (19,15)
 arglut['rs2'] = (24,20)
@@ -393,6 +462,43 @@ def print_u_type(name,match,arguments):
     str_inst(name,arguments) \
   ))
 
+def make_xcrypto_latex_table():
+  print  ( r'\newcommandx{\XCENCODE}[1]{' '%%'         )
+  print  ( r'  \IfStrEqCase{#1}{'         '%%'         )
+
+  # general cases
+
+  for n in namelist :
+    print( r'    {%s}{'                   '%%' % ( n ) ) 
+    print_inst( n )
+    print( r'    }'                       '%%'         )
+
+  # special cases
+
+  print  ( r'    {xc.pperm.hx}{'          '%%'         )
+  print_inst( 'xc.pperm.h0' )
+  print_inst( 'xc.pperm.h1' )
+  print  ( r'    }'                       '%%'         )
+  print  ( r'    {xc.pperm.bx}{'          '%%'         )
+  print_inst( 'xc.pperm.b0' )
+  print_inst( 'xc.pperm.b1' )
+  print_inst( 'xc.pperm.b2' )
+  print_inst( 'xc.pperm.b3' )
+  print  ( r'    }'                       '%%'         )
+  print  ( r'    {xc.aessub}{'            '%%'         )
+  print_inst( 'xc.aessub.enc'    )
+  print_inst( 'xc.aessub.encrot' )
+  print_inst( 'xc.aessub.dec'    )
+  print_inst( 'xc.aessub.decrot' )
+  print  ( r'    }'                       '%%'         )
+  print  ( r'    {xc.aesmix}{'            '%%'         )
+  print_inst( 'xc.aesmix.enc'    )
+  print_inst( 'xc.aesmix.dec'    )
+  print  ( r'    }'                       '%%'         )
+
+  print  ( r'  }'                         '%%'         )
+  print  ( r'}'                           '%%'         )
+
 def print_uj_type(name,match,arguments):
   print("""
 &
@@ -732,6 +838,47 @@ def print_footer(caption=''):
 \\end{table}
   """ % caption)
 
+def make_dec_wirename(instrname):
+    return "dec_%s"     % instrname.lower().replace("xc.","").replace(".","_")
+
+def make_verilog(match,mask):
+    """
+    Generate verilog for decoding all of the ISE instructions.
+    """
+
+    src_wire = "encoded"
+    ise_args = set([])
+    dec_wires= set([])
+
+    for instr in namelist:
+        wirename = make_dec_wirename(instr)
+        tw       = "wire %s = " % (wirename.ljust(15))
+        
+        tw      += "(%s & 32'h%s) == 32'h%s;" % (
+            src_wire, hex(mask[instr])[2:], hex(match[instr])[2:]
+        )
+        
+        dec_wires.add(wirename)
+
+        print(tw)
+
+        for arg in arguments[instr]:
+            ise_args.add(arg)
+
+    for field in ise_args:
+        wirename = "dec_arg_%s" % field.lower().replace(".","_")
+        wirewidth= (arglut[field][0]-arglut[field][1])
+        tw       = "wire [%d:0] %s = encoded[%d:%d];" % (
+            wirewidth,
+            wirename.ljust(15), arglut[field][0],arglut[field][1]
+        )
+        print(tw)
+
+    invalidinstr = "wire dec_invalid_opcode = !(" + \
+        " || ".join(list(dec_wires)) +  \
+        ");" 
+    print(invalidinstr)
+
 def print_inst(n):
   if n == 'fence':
     print_fence_type(n, match[n], arguments[n])
@@ -995,12 +1142,16 @@ for line in sys.stdin:
 
 if sys.argv[1] == '-tex':
   make_latex_table()
+elif sys.argv[1] == '-xcrypto-tex':
+  make_xcrypto_latex_table()
 elif sys.argv[1] == '-privtex':
   make_supervisor_latex_table()
 elif sys.argv[1] == '-chisel':
   make_chisel()
 elif sys.argv[1] == '-c':
   make_c(match,mask)
+elif sys.argv[1] == '-verilog':
+  make_verilog(match,mask)
 elif sys.argv[1] == '-go':
   make_go()
 else:
