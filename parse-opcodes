@@ -470,30 +470,30 @@ def make_xcrypto_latex_table():
 
   for n in namelist :
     print( r'    {%s}{'                   '%%' % ( n ) ) 
-    print_inst( n )
+    print_xcrypto_inst( n )
     print( r'    }'                       '%%'         )
 
   # special cases
 
   print  ( r'    {xc.pperm.hx}{'          '%%'         )
-  print_inst( 'xc.pperm.h0' )
-  print_inst( 'xc.pperm.h1' )
+  print_xcrypto_inst( 'xc.pperm.h0' )
+  print_xcrypto_inst( 'xc.pperm.h1' )
   print  ( r'    }'                       '%%'         )
   print  ( r'    {xc.pperm.bx}{'          '%%'         )
-  print_inst( 'xc.pperm.b0' )
-  print_inst( 'xc.pperm.b1' )
-  print_inst( 'xc.pperm.b2' )
-  print_inst( 'xc.pperm.b3' )
+  print_xcrypto_inst( 'xc.pperm.b0' )
+  print_xcrypto_inst( 'xc.pperm.b1' )
+  print_xcrypto_inst( 'xc.pperm.b2' )
+  print_xcrypto_inst( 'xc.pperm.b3' )
   print  ( r'    }'                       '%%'         )
   print  ( r'    {xc.aessub}{'            '%%'         )
-  print_inst( 'xc.aessub.enc'    )
-  print_inst( 'xc.aessub.encrot' )
-  print_inst( 'xc.aessub.dec'    )
-  print_inst( 'xc.aessub.decrot' )
+  print_xcrypto_inst( 'xc.aessub.enc'    )
+  print_xcrypto_inst( 'xc.aessub.encrot' )
+  print_xcrypto_inst( 'xc.aessub.dec'    )
+  print_xcrypto_inst( 'xc.aessub.decrot' )
   print  ( r'    }'                       '%%'         )
   print  ( r'    {xc.aesmix}{'            '%%'         )
-  print_inst( 'xc.aesmix.enc'    )
-  print_inst( 'xc.aesmix.dec'    )
+  print_xcrypto_inst( 'xc.aesmix.enc'    )
+  print_xcrypto_inst( 'xc.aesmix.dec'    )
   print  ( r'    }'                       '%%'         )
 
   print  ( r'  }'                         '%%'         )
@@ -909,6 +909,25 @@ def print_insts(*names):
   for n in names:
     print_inst(n)
 
+def print_xcrypto_inst(n):
+    ifields = opcodebits[n]
+    fs      = []
+    for hi,lo,val in ifields:
+        width = 1 + hi - lo
+        val = bin(val)[2:].rjust(width,"0")
+        fs.append((hi,lo,val))
+    for argname in arglut:
+        if(argname in arguments[n]):
+            hi,lo = arglut[argname]
+            fs.append((hi,lo,argname))
+    
+    fs.sort(key=lambda fs:fs[0],reverse=True)
+
+    for hi,lo,val in fs:
+        width = 1 + hi - lo
+        print( r'\bitbox{%d}{\tt %s}%%' % (width,val))
+    print( r'\bitbox{%d}{\bf\tt %s}\\%%' % ( 10,  n))
+
 def make_supervisor_latex_table():
   print_header('r', 'i')
   print_subtitle('Trap-Return Instructions')
@@ -1093,6 +1112,7 @@ for line in sys.stdin:
 
   if not name in list(arguments.keys()):
     arguments[name] = []
+    opcodebits[name] = []
 
   for token in tokens[1:]:
     if len(token.split('=')) == 2:
@@ -1110,6 +1130,7 @@ for line in sys.stdin:
         val = int(tokens[1], 0)
         if val >= (1 << (hi-lo+1)):
           sys.exit("%s: bad value %d for range %d..%d" % (name,val,hi,lo))
+        opcodebits[name].append((hi,lo,val))
         mymatch = mymatch | (val << lo)
         mymask = mymask | ((1<<(hi+1))-(1<<lo))
 
