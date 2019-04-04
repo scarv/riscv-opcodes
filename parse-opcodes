@@ -473,16 +473,6 @@ def make_xcrypto_latex_table():
 
   # special cases
 
-  print  ( r'    {xc.pperm.hx}{'          '%%'         )
-  print_xcrypto_inst( 'xc.pperm.h0' )
-  print_xcrypto_inst( 'xc.pperm.h1' )
-  print  ( r'    }'                       '%%'         )
-  print  ( r'    {xc.pperm.bx}{'          '%%'         )
-  print_xcrypto_inst( 'xc.pperm.b0' )
-  print_xcrypto_inst( 'xc.pperm.b1' )
-  print_xcrypto_inst( 'xc.pperm.b2' )
-  print_xcrypto_inst( 'xc.pperm.b3' )
-  print  ( r'    }'                       '%%'         )
   print  ( r'    {xc.aessub}{'            '%%'         )
   print_xcrypto_inst( 'xc.aessub.enc'    )
   print_xcrypto_inst( 'xc.aessub.encrot' )
