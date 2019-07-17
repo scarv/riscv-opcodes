@@ -488,6 +488,20 @@ def make_xcrypto_latex_table():
   print_xcrypto_inst( 'xc.aesmix.enc'    )
   print_xcrypto_inst( 'xc.aesmix.dec'    )
   print  ( r'    }'                       '%%'         )
+  
+  print  ( r'    {xc.sha256}{'            '%%'         )
+  print_xcrypto_inst( 'xc.sha256.s0'    )
+  print_xcrypto_inst( 'xc.sha256.s1'    )
+  print_xcrypto_inst( 'xc.sha256.s2'    )
+  print_xcrypto_inst( 'xc.sha256.s3'    )
+  print  ( r'    }'                       '%%'         )
+  
+  print  ( r'    {xc.sha512}{'            '%%'         )
+  print_xcrypto_inst( 'xc.sha512.s0'    )
+  print_xcrypto_inst( 'xc.sha512.s1'    )
+  print_xcrypto_inst( 'xc.sha512.s2'    )
+  print_xcrypto_inst( 'xc.sha512.s3'    )
+  print  ( r'    }'                       '%%'         )
 
   print  ( r'  }'                         '%%'         )
   print  ( r'}'                           '%%'         )
