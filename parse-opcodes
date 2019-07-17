@@ -24,8 +24,7 @@ digits = {
 cargs= ['imm11'   , 'imm11hi' , 'imm11lo' , 'imm5'
 , 'cshamt'  , 'cmshamt' , 'b0'      , 'b1'      ,
 'b2'      , 'b3'      , 'ca'      , 'cb'      ,
-'cc'      , 'cd'      , 'crs1'    , 'crs2'    ,
-'crs3'    ,             'crd'     , 'crdm'    ,
+'cc'      , 'cd'      , 'rdm'    ,
 'lut8','lut4', 'cs', 'cl']
 
 acodes = {}
@@ -44,11 +43,7 @@ acodes['ca'     ] = "Xa"
 acodes['cb'     ] = "Xb"
 acodes['cc'     ] = "Xc"
 acodes['cd'     ] = "Xd"
-acodes['crs1'   ] = "Xs"
-acodes['crs2'   ] = "Xt"
-acodes['crs3'   ] = "XS"
-acodes['crd'    ] = "XD"
-acodes['crdm'   ] = "XM"
+acodes['rdm'    ] = "XM"
 acodes['lut8'   ] = "X8"
 acodes['lut4'   ] = "X4"
 acodes['cs'     ] = "Xk"
@@ -75,11 +70,7 @@ arglut['ca'     ] = (24,24)
 arglut['cb'     ] = (19,19)
 arglut['cc'     ] = (11,11)
 arglut['cd'     ] = (20,20)
-arglut['crs1'   ] = (18,15)
-arglut['crs2'   ] = (23,20)
-arglut['crs3'   ] = (27,24)
-arglut['crd'    ] = (10, 7)
-arglut['crdm'   ] = ( 9, 7)
+arglut['rdm'    ] = (11, 8)
 arglut['lut4'   ] = (28,25)
 arglut['lut8'   ] = (31,24)
 
