@@ -928,7 +928,7 @@ def print_xcrypto_inst(n):
     for hi,lo,val in fs:
         width = 1 + hi - lo
         print( r'\bitbox{%d}{\tt %s}%%' % (width,val))
-    print( r'\bitbox{%d}{\bf\tt %s}\\%%' % ( 10,  n))
+    print( r'\bitbox{%d}{\bf\tt %s}\\%%' % ( 8,  n))
 
 def make_supervisor_latex_table():
   print_header('r', 'i')
