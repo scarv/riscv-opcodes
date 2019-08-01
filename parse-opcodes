@@ -28,6 +28,7 @@ cargs= ['imm11'   , 'imm11hi' , 'imm11lo' , 'imm5'
 'lut8','lut4', 'cs', 'cl']
 
 acodes = {}
+acodes['ps'     ] = "Xs"
 acodes['pw'     ] = "Xp"
 acodes['rdm'    ] = "XM"
 acodes['rd'     ] = "d"
@@ -38,6 +39,7 @@ acodes['shamt'  ] = "<"
 acodes['shamtw' ] = ">"
 
 arglut = {}
+arglut['ps'     ] = (31,30)
 arglut['pw'     ] = (31,30)
 arglut['rdm'    ] = (11, 8)
 
