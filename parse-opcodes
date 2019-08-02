@@ -402,6 +402,9 @@ def make_c(match,mask):
 
   for mnemonic in namelist:
 
+      if(not mnemonic.startswith("xc.")):
+          continue
+      
       argstring = ",".join([acodes[a] for a in arguments[mnemonic]])
 
       line = "{%19s, 0, {\"X\",0}, %10s, %s, %s, match_opcode, 0}," % (
