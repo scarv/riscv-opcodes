@@ -96,6 +96,9 @@ csrs = [
   (0x002, 'frm'),
   (0x003, 'fcsr'),
 
+  # Tentative XCrypto uxcrypto CSR
+  (0x800, 'uxcrypto'),
+
   # Standard User RO
   (0xC00, 'cycle'),
   (0xC01, 'time'),
