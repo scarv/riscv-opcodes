@@ -21,16 +21,11 @@ digits = {
 "3":"three"
 }
 
-cargs= ['imm11'   , 'imm11hi' , 'imm11lo' , 'imm5'
-, 'cshamt'  , 'cmshamt' , 'b0'      , 'b1'      ,
-'b2'      , 'b3'      , 'ca'      , 'cb'      ,
-'cc'      , 'cd'      , 'rdm'    ,
-'lut8','lut4', 'cs', 'cl']
-
 acodes = {}
 acodes['ps'     ] = "Xs"
 acodes['pw'     ] = "Xp"
 acodes['rdm'    ] = "XM"
+acodes['l'      ] = "Xl"
 acodes['rd'     ] = "d"
 acodes['rs1'    ] = "s"
 acodes['rs2'    ] = "t"
@@ -39,6 +34,7 @@ acodes['shamt'  ] = "<"
 acodes['shamtw' ] = ">"
 
 arglut = {}
+arglut['l'      ] = (31,31)
 arglut['ps'     ] = (31,30)
 arglut['pw'     ] = (31,30)
 arglut['rdm'    ] = (11, 8)
@@ -99,6 +95,9 @@ csrs = [
   (0x001, 'fflags'),
   (0x002, 'frm'),
   (0x003, 'fcsr'),
+
+  # Tentative XCrypto uxcrypto CSR
+  (0x800, 'uxcrypto'),
 
   # Standard User RO
   (0xC00, 'cycle'),
