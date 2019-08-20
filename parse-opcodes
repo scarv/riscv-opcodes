@@ -457,7 +457,7 @@ def print_u_type(name,match,arguments):
   ))
 
 def make_xcrypto_latex_table():
-  print  ( r'\newcommandx{\XCENCODE}[1]{' '%%'         )
+  print  ( r'\newcommandx{\XCRYPTOENCODE}[1]{' '%%'         )
   print  ( r'  \IfStrEqCase{#1}{'         '%%'         )
 
   # general cases
