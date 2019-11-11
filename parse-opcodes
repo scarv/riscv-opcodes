@@ -25,6 +25,8 @@ acodes = {}
 acodes['ps'     ] = "Xs"
 acodes['pw'     ] = "Xp"
 acodes['rdm'    ] = "XM"
+acodes['rsm1'   ] = "Xt"
+acodes['rsm2'   ] = "Xq"
 acodes['l'      ] = "Xl"
 acodes['rd'     ] = "d"
 acodes['rs1'    ] = "s"
@@ -38,6 +40,9 @@ arglut['l'      ] = (31,31)
 arglut['ps'     ] = (31,30)
 arglut['pw'     ] = (31,30)
 arglut['rdm'    ] = (11, 8)
+
+arglut['rsm1'] = (19,16)
+arglut['rsm2'] = (24,21)
 
 arglut['rd'] = (11,7)
 arglut['rs1'] = (19,15)
@@ -401,7 +406,7 @@ def make_c(match,mask):
 
   for mnemonic in namelist:
 
-      if(not mnemonic.startswith("xc.")):
+      if(not mnemonic.startswith("xc.") and not mnemonic.startswith("mask.")):
           continue
       
       argstring = ",".join([acodes[a] for a in arguments[mnemonic]])
