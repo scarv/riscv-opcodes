@@ -2,28 +2,33 @@ SHELL := /bin/sh
 
 ISASIM_H := ../riscv-isa-sim/riscv/encoding.h
 PK_H := ../riscv-pk/machine/encoding.h
-FESVR_H := ../riscv-fesvr/fesvr/encoding.h
 ENV_H := ../riscv-tests/env/encoding.h
 OPENOCD_H := ../riscv-openocd/src/target/riscv/encoding.h
 
-ALL_OPCODES := opcodes-pseudo opcodes opcodes-rvc opcodes-rvc-pseudo opcodes-custom
+ALL_REAL_ILEN32_OPCODES := opcodes-rv32i opcodes-rv64i opcodes-rv32m opcodes-rv64m opcodes-rv32b opcodes-rv64b opcodes-rv32a opcodes-rv64a opcodes-rv32f opcodes-rv64f opcodes-rv32d opcodes-rv64d opcodes-rv32q opcodes-rv64q opcodes-system
+ALL_REAL_OPCODES := $(ALL_REAL_ILEN32_OPCODES) opcodes-rvc opcodes-rv32c opcodes-rv64c opcodes-custom opcodes-rvv
 
-install: $(ISASIM_H) $(PK_H) $(FESVR_H) $(ENV_H) $(OPENOCD_H) inst.chisel instr-table.tex priv-instr-table.tex
+ALL_OPCODES := opcodes-pseudo $(ALL_REAL_OPCODES) opcodes-rvv-pseudo
 
-$(ISASIM_H) $(PK_H) $(FESVR_H) $(ENV_H) $(OPENOCD_H): $(ALL_OPCODES) parse-opcodes encoding.h
+install: $(ISASIM_H) $(PK_H) $(ENV_H) $(OPENOCD_H) inst.chisel instr-table.tex priv-instr-table.tex
+
+$(ISASIM_H) $(PK_H) $(ENV_H) $(OPENOCD_H): $(ALL_OPCODES) parse_opcodes encoding.h
 	cp encoding.h $@
-	cat opcodes opcodes-rvc-pseudo opcodes-rvc opcodes-custom | ./parse-opcodes -c >> $@
+	cat $(ALL_OPCODES) | python ./parse_opcodes -c >> $@
 
-inst.chisel: $(ALL_OPCODES) parse-opcodes
-	cat opcodes opcodes-rvc opcodes-rvc-pseudo opcodes-custom opcodes-pseudo | ./parse-opcodes -chisel > $@
+inst.chisel: $(ALL_OPCODES) parse_opcodes
+	cat $(ALL_OPCODES) | ./parse_opcodes -chisel > $@
 
-inst.go: opcodes opcodes-pseudo parse-opcodes
-	cat opcodes opcodes-pseudo | ./parse-opcodes -go > $@
+inst.go: $(ALL_REAL_ILEN32_OPCODES) parse_opcodes
+	cat $(ALL_REAL_ILEN32_OPCODES) | ./parse_opcodes -go > $@
 
-instr-table.tex: $(ALL_OPCODES) parse-opcodes
-	cat opcodes opcodes-pseudo | ./parse-opcodes -tex > $@
+inst.sverilog: $(ALL_OPCODES) parse_opcodes
+	cat $(ALL_OPCODES) | ./parse_opcodes -sverilog > $@
 
-priv-instr-table.tex: $(ALL_OPCODES) parse-opcodes
-	cat opcodes opcodes-pseudo | ./parse-opcodes -privtex > $@
+instr-table.tex: $(ALL_OPCODES) parse_opcodes
+	cat $(ALL_OPCODES) | ./parse_opcodes -tex > $@
+
+priv-instr-table.tex: $(ALL_OPCODES) parse_opcodes
+	cat $(ALL_OPCODES) | ./parse_opcodes -privtex > $@
 
 .PHONY : install
