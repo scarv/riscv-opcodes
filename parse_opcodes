@@ -13,8 +13,33 @@ match = OrderedDict()
 mask = OrderedDict()
 pseudos = {}
 arguments = {}
+opcodebits ={}
+
+digits = {
+"0":"zero",
+"1":"one",
+"2":"two",
+"3":"three"
+}
+
+acodes = {}
+acodes['ps'     ] = "Xs"
+acodes['pw'     ] = "Xp"
+acodes['rdm'    ] = "XM"
+acodes['l'      ] = "Xl"
+acodes['rd'     ] = "d"
+acodes['rs1'    ] = "s"
+acodes['rs2'    ] = "t"
+acodes['rs3'    ] = "r"
+acodes['shamt'  ] = "<"
+acodes['shamtw' ] = ">"
 
 arglut = {}
+arglut['l'      ] = (31,31)
+arglut['ps'     ] = (31,30)
+arglut['pw'     ] = (31,30)
+arglut['rdm'    ] = (11, 8)
+
 arglut['rd'] = (11,7)
 arglut['rs1'] = (19,15)
 arglut['rs2'] = (24,20)
@@ -1166,6 +1191,7 @@ def parse_inputs(args):
 
       if not name in list(arguments.keys()):
         arguments[name] = []
+        opcodebits[name] = []
 
       for token in tokens[1:]:
         if len(token.split('=')) == 2:
@@ -1185,6 +1211,7 @@ def parse_inputs(args):
               sys.exit("%s: bad value %d for range %d..%d" % (name,val,hi,lo))
             mymatch = mymatch | (val << lo)
             mymask = mymask | ((1<<(hi+1))-(1<<lo))
+            opcodebits[name].append((hi,lo,val))
 
           if cover & ((1<<(hi+1))-(1<<lo)):
             sys.exit("%s: overspecified" % name)
@@ -1222,6 +1249,8 @@ if __name__ == "__main__":
 
   if sys.argv[1] == '-tex':
     make_latex_table()
+  elif sys.argv[1] == '-xcrypto-tex':
+    make_xcrypto_latex_table()
   elif sys.argv[1] == '-privtex':
     make_supervisor_latex_table()
   elif sys.argv[1] == '-chisel':
