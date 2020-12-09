@@ -12,7 +12,7 @@
 #define MSTATUS_HPIE        0x00000040
 #define MSTATUS_MPIE        0x00000080
 #define MSTATUS_SPP         0x00000100
-#define MSTATUS_HPP         0x00000600
+#define MSTATUS_VS          0x00000600
 #define MSTATUS_MPP         0x00001800
 #define MSTATUS_FS          0x00006000
 #define MSTATUS_XS          0x00018000
@@ -32,6 +32,7 @@
 #define SSTATUS_UPIE        0x00000010
 #define SSTATUS_SPIE        0x00000020
 #define SSTATUS_SPP         0x00000100
+#define SSTATUS_VS          0x00000600
 #define SSTATUS_FS          0x00006000
 #define SSTATUS_XS          0x00018000
 #define SSTATUS_SUM         0x00040000
@@ -39,6 +40,9 @@
 #define SSTATUS32_SD        0x80000000
 #define SSTATUS_UXL         0x0000000300000000
 #define SSTATUS64_SD        0x8000000000000000
+
+#define USTATUS_UIE         0x00000001
+#define USTATUS_UPIE        0x00000010
 
 #define DCSR_XDEBUGVER      (3U<<30)
 #define DCSR_NDRESET        (1<<29)
@@ -61,6 +65,7 @@
 #define DCSR_CAUSE_DEBUGINT 3
 #define DCSR_CAUSE_STEP     4
 #define DCSR_CAUSE_HALT     5
+#define DCSR_CAUSE_GROUP    6
 
 #define MCONTROL_TYPE(xlen)    (0xfULL<<((xlen)-4))
 #define MCONTROL_DMODE(xlen)   (1ULL<<((xlen)-5))
@@ -95,12 +100,15 @@
 #define MCONTROL_MATCH_MASK_LOW  4
 #define MCONTROL_MATCH_MASK_HIGH 5
 
+#define MIP_USIP            (1 << IRQ_U_SOFT)
 #define MIP_SSIP            (1 << IRQ_S_SOFT)
 #define MIP_HSIP            (1 << IRQ_H_SOFT)
 #define MIP_MSIP            (1 << IRQ_M_SOFT)
+#define MIP_UTIP            (1 << IRQ_U_TIMER)
 #define MIP_STIP            (1 << IRQ_S_TIMER)
 #define MIP_HTIP            (1 << IRQ_H_TIMER)
 #define MIP_MTIP            (1 << IRQ_M_TIMER)
+#define MIP_UEIP            (1 << IRQ_U_EXT)
 #define MIP_SEIP            (1 << IRQ_S_EXT)
 #define MIP_HEIP            (1 << IRQ_H_EXT)
 #define MIP_MEIP            (1 << IRQ_M_EXT)
@@ -138,12 +146,15 @@
 #define PMP_NA4   0x10
 #define PMP_NAPOT 0x18
 
+#define IRQ_U_SOFT   0
 #define IRQ_S_SOFT   1
 #define IRQ_H_SOFT   2
 #define IRQ_M_SOFT   3
+#define IRQ_U_TIMER  4
 #define IRQ_S_TIMER  5
 #define IRQ_H_TIMER  6
 #define IRQ_M_TIMER  7
+#define IRQ_U_EXT    8
 #define IRQ_S_EXT    9
 #define IRQ_H_EXT    10
 #define IRQ_M_EXT    11
